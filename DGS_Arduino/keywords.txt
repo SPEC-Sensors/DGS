@@ -1,0 +1,40 @@
+
+
+#######################################
+# Syntax Coloring Map For ULP
+#######################################
+
+#######################################
+# Library (KEYWORD1)
+#######################################
+
+DGS	KEYWORD1	DGS
+
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setToff	KEYWORD2
+setBC	KEYWORD2
+getFW	KEYWORD2
+getLMP	KEYWORD2
+setLMP	KEYWORD2
+getData	KEYWORD2
+getTemp	KEYWORD2
+getConc	KEYWORD2
+getRh	KEYWORD2
+zero	KEYWORD2
+setXSpan	KEYWORD2
+getEEPROM	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+
+eepromInt	LITERAL1
+eepromStr	LITERAL1
+Sensitivity_Code	LITERAL1
+DEBUG	LITERAL1
+LMP	LITERAL1
