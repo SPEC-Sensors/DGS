@@ -55,13 +55,19 @@ void DGS::DEBUG_PRINT(String x) {
     Serial.print(x);
   }
 }
-
+int qounter=0; //for timeout
 int DGS::getData(char c) {
   delay(500);
   String dataString;
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write(c);
-  while (!_mySerial->available()) {
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
   }
   dataString = _mySerial->readStringUntil('\n');
   for (int i = 0; i < 11; i++) {
@@ -80,7 +86,14 @@ int DGS::setToff(float offset)
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write('T');
   //getData('T');
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
   delay(10);
@@ -96,7 +109,14 @@ int DGS::setToff(float offset)
     return 0;
   }
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINTLN(commandString);
   if (commandString.toFloat() == offset) {
@@ -120,7 +140,14 @@ int DGS::setBC(String BC)
   _mySerial->write('B');
   //getData('B');
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINTLN(commandString);
 
@@ -139,12 +166,26 @@ int DGS::setBC(String BC)
     return 0;
   }
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readStringUntil('\r');
   commandString.setCharAt(commandString.length() - 1, '\r');
   DEBUG_PRINTLN(commandString);
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINTLN(commandString);
 
@@ -165,10 +206,24 @@ void DGS::getEEPROM(void)
   _mySerial->write('e');
   //getData('e');
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   String data = _mySerial->readStringUntil('\n'); //Read Header
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   for (int i = 1; i < 14; i++) {
     data = _mySerial->readStringUntil('\n');
     String subS1 = data.substring(0, data.indexOf('='));
@@ -207,7 +262,14 @@ String DGS::getFW(void)
   _mySerial->write('f');
   //getData('f');
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   dataString = _mySerial->readStringUntil('\r');
   _mySerial->flush();
   while (_mySerial->available()) _mySerial->read();
@@ -229,7 +291,14 @@ int DGS::setLMP(int R1, int R2, int R3)
   _mySerial->write('L');
   //getData('L');
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
   if (commandString == "\r\nEnter LMP91000 Register 0x10: ") {
@@ -240,7 +309,14 @@ int DGS::setLMP(int R1, int R2, int R3)
     DEBUG_PRINTLN("Setting Failed");
     return 0;
   }
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readStringUntil('\n');
   DEBUG_PRINTLN(commandString);
   if (commandString.toInt() != R1) {
@@ -248,7 +324,14 @@ int DGS::setLMP(int R1, int R2, int R3)
     return 0;
   }
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
   if (commandString == "Enter LMP91000 Register 0x11: ") {
@@ -259,7 +342,14 @@ int DGS::setLMP(int R1, int R2, int R3)
     DEBUG_PRINTLN("Setting Failed");
     return 0;
   }
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readStringUntil('\n');
   DEBUG_PRINTLN(commandString);
   if (commandString.toInt() != R2) {
@@ -267,7 +357,14 @@ int DGS::setLMP(int R1, int R2, int R3)
     return 0;
   }
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
   if (commandString == "Enter LMP91000 Register 0x12: ") {
@@ -278,7 +375,14 @@ int DGS::setLMP(int R1, int R2, int R3)
     DEBUG_PRINTLN("Setting Failed");
     return 0;
   }
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readStringUntil('\n');
   DEBUG_PRINTLN(commandString);
   if (commandString.toInt() != R3) {
@@ -301,7 +405,14 @@ int DGS::getLMP(void)
   _mySerial->write('l');
   //getData('l');
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   dataString = _mySerial->readStringUntil('\n');
   for (int i = 0; i < 3; i++) {
     dataString = _mySerial->readStringUntil('\n');
@@ -324,7 +435,14 @@ int DGS::zero(void)
   _mySerial->write('Z');
   //getData('Z');
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   //DEBUG_PRINT(commandString);
   commandString.remove(commandString.length() - 2);
@@ -347,7 +465,14 @@ int DGS::setXSpan(float X) //Not Functioning
   _mySerial->write('S');
   //getData('S');
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
   delay(10);
@@ -361,17 +486,38 @@ int DGS::setXSpan(float X) //Not Functioning
     return 0;
   }
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   inSf = _mySerial->readString();
   DEBUG_PRINTLN(inSf);
   if (inSf.toFloat() == X) {
     DEBUG_PRINTLN(" Matched Input ");
   }
 
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
-  while (!_mySerial->available()) {}
+      qounter=0;
+  while (!_mySerial->available()) { //wait for sensor response, timeout if sensor not responds
+	 delay(1);
+	 qounter++;
+	 if (qounter>4500) {
+	DEBUG_PRINTLN("timeout");	 
+	 break;}
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
   delay(10);
