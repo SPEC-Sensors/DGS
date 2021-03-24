@@ -1,65 +1,79 @@
 /*
-  DGS_25SEP17.cpp - Library for reading KWJ Engineering with SPEC Sensors on Digital SDK with firmware date 25SEP17.
-  Created by David E. Peaslee, Mar 29, 2018.
+DGS.cpp - Library for reading KWJ Engineering with SPEC Sensors on Digital SDK.
+Created by David E. Peaslee, NOV 27, 2016.
+Updated by David Peaslee, MAR 24, 2021
 */
-
 
 #include "DGS.h"
 
-DGS::DGS(Stream * mySerial) : _mySerial(mySerial) {
+DGS::DGS(Stream *mySerial) : _mySerial(mySerial) {
+  
 
 }
-
 DGS::DGS(Stream &mySerial) : _mySerial(&mySerial) {
+  
 
 }
 
-void DGS::DEBUG_PRINTLN(long x) {
-  delay(10);
+void DGS::unlock(void)
+{
+  DEBUG_PRINT("Unlocking");
+  _mySerial->write("12345\r");
+  delay(500);
+}
+
+void DGS::DEBUG_PRINTLN(long x)
+{
   if (DEBUG) {
+    delay(10);
     Serial.println(x);
   }
 }
 
-void DGS::DEBUG_PRINTLN(String x) {
-  delay(10);
+void DGS::DEBUG_PRINTLN(String x)
+{
   if (DEBUG) {
+    delay(10);
     Serial.println(x);
   }
 }
 
-void DGS::DEBUG_PRINTLN(float x) {
-  delay(10);
+void DGS::DEBUG_PRINTLN(float x)
+{
   if (DEBUG) {
+    delay(10);
     Serial.println(x);
   }
 }
 
-void DGS::DEBUG_PRINT(long x) {
-  delay(10);
+void DGS::DEBUG_PRINT(long x)
+{
   if (DEBUG) {
+    delay(10);
     Serial.print(x);
   }
 }
 
-void DGS::DEBUG_PRINT(float x) {
-  delay(10);
+void DGS::DEBUG_PRINT(float x)
+{
   if (DEBUG) {
+    delay(10);
     Serial.print(x);
   }
 }
 
-void DGS::DEBUG_PRINT(String x) {
-  delay(10);
+void DGS::DEBUG_PRINT(String x)
+{
   if (DEBUG) {
+    delay(10);
     Serial.print(x);
   }
 }
 
-int DGS::getData(char c) {
+int DGS::getData(char c)
+{
   delay(500);
   String dataString;
-  while (_mySerial->available()) _mySerial->read();
   _mySerial->write(c);
   while (!_mySerial->available()) {
   }
@@ -79,21 +93,34 @@ int DGS::setToff(float offset)
   DEBUG_PRINTLN("Starting T Offset");
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write('T');
-  //getData('T');
+  getData('T');
   while (!_mySerial->available()) {}
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
   delay(10);
+  if (commandString == "Enter Unlock Code: ") {
+    unlock();
+  }
+  else {
+    DEBUG_PRINTLN("Failed Unlock");
+    return 0;
+  }
 
+  while (!_mySerial->available()) {}
+  commandString = _mySerial->readString();
+  DEBUG_PRINT(commandString);
+  delay(10);
   if (commandString == "\r\nEnter Temperature_Offset: ") {
     _mySerial->print(offset);
     _mySerial->write('\r');
   }
   else {
     DEBUG_PRINTLN("Failed Entering Temperature");
+
     delay(2000);
     while (_mySerial->available()) _mySerial->read();
     return 0;
+
   }
 
   while (!_mySerial->available()) {}
@@ -105,56 +132,66 @@ int DGS::setToff(float offset)
     return 1;
   }
 
-  else  {
+  else
+  {
     getData('\r');
     delay(3000);
     return 0;
   }
 }
 
-int DGS::setBC(String BC)
+int DGS::setBC(char * BC)
 {
   String commandString;
   DEBUG_PRINTLN("Starting BC Setup");
-  while (_mySerial->available()) _mySerial->readString();
+  while (_mySerial->available()) _mySerial->read();
   _mySerial->write('B');
-  //getData('B');
+  getData('B');
+  while (!_mySerial->available()) {}
+  commandString = _mySerial->readString();
+  DEBUG_PRINT(commandString);
+
+  delay(10);
+  if (commandString == "Enter Unlock Code: ") {
+    unlock();
+  }
+  else {
+    DEBUG_PRINT("Failed Unlock");
+    return 0;
+  }
 
   while (!_mySerial->available()) {}
   commandString = _mySerial->readString();
-  DEBUG_PRINTLN(commandString);
-
+  DEBUG_PRINT(commandString);
   delay(10);
-  if (commandString == "\r\nRemove Sensor and Scan: ") { //": "
-    for (int i = 0; i < BC.length() + 1; i++) {
-      _mySerial->write(BC.charAt(i));
+  if (commandString == "\r\nRemove Sensor and Scan: ") {
+
+    for (int i = 0; i < strlen(BC) + 1; i++) {
+      _mySerial->write(BC[i]);
+
       delay(10);
     }
     _mySerial->write('\r');
   }
   else {
     DEBUG_PRINTLN("Failed Entering BC");
-    DEBUG_PRINTLN(commandString);
-
     return 0;
   }
-
   while (!_mySerial->available()) {}
-  commandString = _mySerial->readStringUntil('\r');
-  commandString.setCharAt(commandString.length() - 1, '\r');
+  commandString = _mySerial->readStringUntil('\n');
   DEBUG_PRINTLN(commandString);
-
   while (!_mySerial->available()) {}
   commandString = _mySerial->readString();
-  DEBUG_PRINTLN(commandString);
-
-  if (commandString == "\r\nSetting OC...done\r\nSetting zero...done\r\n") {
+  DEBUG_PRINT(commandString);
+  while (!_mySerial->available()) {}
+  commandString = _mySerial->readString();
+  DEBUG_PRINT(commandString);
+  if (commandString == "done\r\nSetting zero...done\r\n") {
     delay(2000);
     DEBUG_PRINTLN("Success");
     return 1;
   }
   delay(2000);
-  DEBUG_PRINTLN("Failed Setting Barcode");
   return 0;
 }
 
@@ -163,11 +200,10 @@ void DGS::getEEPROM(void)
   DEBUG_PRINTLN("Starting EEPROM Read");
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write('e');
-  //getData('e');
+  getData('e');
 
-  while (!_mySerial->available()) {}
-  String data = _mySerial->readStringUntil('\n'); //Read Header
-
+  String data = _mySerial->readStringUntil('\n');
+  DEBUG_PRINTLN(data);
   while (!_mySerial->available()) {}
   for (int i = 1; i < 14; i++) {
     data = _mySerial->readStringUntil('\n');
@@ -178,7 +214,6 @@ void DGS::getEEPROM(void)
     DEBUG_PRINT("= ");
     DEBUG_PRINTLN(eepromInt[i]);
   }
-
   for (int i = 14; i < 19; i++) {
     data = _mySerial->readStringUntil('\n');
     String subS1 = data.substring(0, data.indexOf('='));
@@ -188,7 +223,6 @@ void DGS::getEEPROM(void)
     DEBUG_PRINT("= ");
     DEBUG_PRINTLN(eepromStr[i - 14]);
   }
-
   data = _mySerial->readStringUntil('\n');
   String subS1 = data.substring(0, data.indexOf('='));
   String subS2 = data.substring(data.indexOf('=') + 2);
@@ -201,33 +235,38 @@ void DGS::getEEPROM(void)
 String DGS::getFW(void)
 {
   String dataString;
-  String Warning = "Not Compatible Firmware!!";
   DEBUG_PRINTLN("Getting FW");
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write('f');
-  //getData('f');
+  getData('f');
 
   while (!_mySerial->available()) {}
   dataString = _mySerial->readStringUntil('\r');
   _mySerial->flush();
-  while (_mySerial->available()) _mySerial->read();
-  if (dataString != "25SEP17") {
-    DEBUG_PRINTLN(Warning);
-    return Warning;
-
-  }
   return dataString;
+  while (_mySerial->available()) _mySerial->read();
 }
 
 int DGS::setLMP(int R1, int R2, int R3)
 {
   String commandString;
-  DEBUG_PRINTLN("");
-
   DEBUG_PRINTLN("Setting LMP Registers");
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write('L');
-  //getData('L');
+
+
+  getData('L');
+  while (!_mySerial->available()) {}
+  commandString = _mySerial->readString();
+  DEBUG_PRINTLN(commandString);
+  delay(10);
+  if (commandString == "Enter Unlock Code: ") {
+    unlock();
+  }
+  else {
+    DEBUG_PRINTLN("Failed Unlock");
+    return 0;
+  }
 
   while (!_mySerial->available()) {}
   commandString = _mySerial->readString();
@@ -299,10 +338,9 @@ int DGS::getLMP(void)
   DEBUG_PRINTLN("Getting LMP Registers");
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write('l');
-  //getData('l');
+  getData('l');
 
   while (!_mySerial->available()) {}
-  dataString = _mySerial->readStringUntil('\n');
   for (int i = 0; i < 3; i++) {
     dataString = _mySerial->readStringUntil('\n');
     String subS = dataString.substring(dataString.indexOf('=') + 1, dataString.length());
@@ -322,30 +360,59 @@ int DGS::zero(void)
   DEBUG_PRINTLN("Starting Zero");
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write('Z');
-  //getData('Z');
+  getData('Z');
 
   while (!_mySerial->available()) {}
   commandString = _mySerial->readString();
-  //DEBUG_PRINT(commandString);
-  commandString.remove(commandString.length() - 2);
 
-  if (commandString == "\r\nSetting zero...done") {
+
+  DEBUG_PRINTLN(commandString);
+
+  delay(10);
+  if (commandString == "Enter Unlock Code: ") {
+    unlock();
+  }
+  else {
+    DEBUG_PRINTLN("Failed Unlock");
+    return 0;
+  }
+
+  while (!_mySerial->available()) {}
+  commandString = _mySerial->readString();
+  DEBUG_PRINT(commandString);
+
+  while (!_mySerial->available()) {}
+  commandString = _mySerial->readString();
+  DEBUG_PRINT(commandString);
+  commandString.remove(commandString.length() - 2);
+  if (commandString == "done") {
     DEBUG_PRINTLN("Success");
     return 1;
   }
   else DEBUG_PRINTLN("Failed Zero");
-
   return 0;
 }
 
-int DGS::setXSpan(float X) //Not Functioning
+int DGS::setXSpan(float X)
 {
   String commandString;
-  String inSf;
+  float inSf;
   DEBUG_PRINTLN("Starting Span Setup");
   while (_mySerial->available()) _mySerial->read();
   _mySerial->write('S');
-  //getData('S');
+  getData('S');
+
+  while (!_mySerial->available()) {}
+  commandString = _mySerial->readString();
+  DEBUG_PRINT(commandString);
+  delay(10);
+  if (commandString == "Enter Unlock Code: ") {
+    unlock();
+  }
+  else {
+    DEBUG_PRINT("Failed Unlock");
+    return 0;
+  }
 
   while (!_mySerial->available()) {}
   commandString = _mySerial->readString();
@@ -357,56 +424,50 @@ int DGS::setXSpan(float X) //Not Functioning
   }
   else {
     DEBUG_PRINT("Failed Span");
-    while (_mySerial->available()) _mySerial->read();
     return 0;
   }
-
   while (!_mySerial->available()) {}
-  inSf = _mySerial->readString();
-  DEBUG_PRINTLN(inSf);
-  if (inSf.toFloat() == X) {
-    DEBUG_PRINTLN(" Matched Input ");
-  }
+  inSf = _mySerial->parseFloat();
+  DEBUG_PRINT(inSf);
 
-  while (!_mySerial->available()) {}
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
-  while (!_mySerial->available()) {}
+
+  if (inSf == X)
+  {
+
+  }
+  while (!_mySerial->available()) {
+    delay(1);
+  }
   commandString = _mySerial->readString();
   DEBUG_PRINT(commandString);
   delay(10);
-  if (commandString == "Setting span...done\r\n") {
+  if (commandString == "done\r\n") {
     DEBUG_PRINTLN("Success");
     return 1;
   }
   else DEBUG_PRINTLN("Failed Span");
   return 0;
+
+  delay(10);
 }
 
-long DGS::getConc(char x)
+long DGS::getConc(char c)
 {
-  if (x == 'p') return dataArray[1];
-  else return dataArray[4];
+  if (c == 'c')
+    return dataArray[4];
+  else return dataArray[1];
 }
 
-long DGS::getTemp(char t)
+long DGS::getTemp(char u)
 {
-  if (t == 'F') return dataArray[2] * 9 / 5 + 32;
-  else if (t == 'C') return dataArray[2];
-  else return dataArray[5];
+  if (u == 'F')
+    return dataArray[2] * 9 / 5 + 32;
+  else return dataArray[2];
 }
 
-long DGS::getRh(char r)
+long DGS::getRh(void)
 {
-  if (r == 'r') return dataArray[3];
-  else return dataArray[6];
+  return dataArray[3];
 }
-
-
-//  Serial.println(commandString.length());
-//  for (int i = 0; i < commandString.length(); i++) {
-//    int t = (int)commandString.charAt(i);
-//    Serial.print(t, HEX);
-//    delay(10);
-//  }
-
