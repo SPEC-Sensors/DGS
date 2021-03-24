@@ -2,7 +2,9 @@
 SPEC Sensors' Digital Gas Sensor Library for Arduino (DGS/DSDK/DULP)
 
 Created by David E. Peaslee, March 29, 2018.
+Updated by David Peaslee, March 24, 2021
 Created for SPEC/KWJ Digital Gas Sensor (DGS, or also known as DULPSM)
+
 
 This is the library for the SPEC Sensors Digital Gas Sensor (DGS), also known as DGSDK, or previously DULP.
 This library has no expressed guarantee or warranty and is free to use or distribute.
