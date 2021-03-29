@@ -1,8 +1,8 @@
 /*
   DSDK_RUN2 - Example use of library for reading KWJ Engineering with SPEC Sensors on Digital SDK.
   Created by David E. Peaslee, March 29, 2018.
+  Updated by David E. Peaslee, March 29, 2021.
   Created for SPEC/KWJ Digital Gas Sensor (DGS, or also known as DULPSM)
-  Not yet released into the public domain.
 
 
   !!! RX, TX Must be on 3.3 volt communication, or using level shifters to get to 3.3V UART!!!
@@ -101,6 +101,8 @@ void loop()
       mySensor2.DEBUG = true;
       mySensor1.getEEPROM();
       mySensor2.getEEPROM();
+      mySensor1.DEBUG = false;
+      mySensor2.DEBUG = false;
     }
   }
 }
