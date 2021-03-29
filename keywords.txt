@@ -25,8 +25,11 @@ getTemp	KEYWORD2
 getConc	KEYWORD2
 getRh	KEYWORD2
 zero	KEYWORD2
+sleepSensor	KEYWORD2
+wakeSensor	KEYWORD2
 setXSpan	KEYWORD2
 getEEPROM	KEYWORD2
+setAve	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -38,3 +41,4 @@ eepromStr	LITERAL1
 Sensitivity_Code	LITERAL1
 DEBUG	LITERAL1
 LMP	LITERAL1
+isSleeping	LITERAL1
