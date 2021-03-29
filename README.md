@@ -16,6 +16,8 @@ DGS Sensor Library - Example use of library for reading KWJ Engineering digital 
 
 !!! RX, TX Must be on 3.3 volt communication, or using level shifters to get to 3.3V UART!!!
 
+Serial settings are 9600 baud, 8N1N, and no line ending for sending commands directly to DGS without the library.
+
 Wiring:
 Connect the TX of Digital Sensor to the RX of 3.3 V Arduino
 Connect the RX of Digital Sensor to the TX of 3.3 V Arduino
@@ -37,7 +39,7 @@ DSDK_Photon is for the particle photon microcontroller, but works with similar c
 
 DSDK_RUN2 will work if your board is capable of supporting 2 UART devices at the same time. Arduino Due is an excelent chouce for this example.
 
-DSDK_Photon tested on Phonton.
+DSDK_Photon tested on Phonton, but has its own copy of DGS.h and DGS.c. !!Not up to date!!
 DSDK_RUN2 tested using Serial1 and Serial2 of Arduino Due.
 DSDK_SETUP tested on Due, and 3.3V Arduino Pro Mini (using softwareSerial, instead of Serial1).
 DSDK_UART tested on Due, Photon, and 3.3V Arduino Pro Mini (using softwareSerial, instead of Serial1).
