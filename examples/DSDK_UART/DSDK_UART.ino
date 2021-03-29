@@ -1,8 +1,8 @@
 /*
 DSDK_UART - Example use of library for reading KWJ Engineering with SPEC Sensors on Digital SDK.
 Created by David E. Peaslee, March 29, 2018.
+Updated by David Peaslee, March 29, 2021.
 Created for SPEC/KWJ Digital Gas Sensor (DGS, or also known as DULPSM)
-Not yet released into the public domain.
 
 !!! RX, TX Must be on 3.3 volt communication, or using level shifters to get to 3.3V UART!!!
 
@@ -11,6 +11,8 @@ Connect the TX of Digital Sensor to the RX of 3.3 V Arduino
 Connect the RX of Digital Sensor to the TX of 3.3 V Arduino
 Connect the power of Digital Sensor to the 3.3V power of the Arduino
 Connect the ground of Digital Sensor to the ground of the Arduino
+
+Terminal: 9600 baud, 8N1N, no line ending
 
 This code is optimized for the Arduino Due, but can be modified to work with any other Arduino.
 The DGS is a 3.3V device, which means you must use level shifters if using with a 5V Arduino.
@@ -30,7 +32,6 @@ DGS runs at 9600 baud rate.
 //
 //SoftwareSerial mySerial(10, 11); // !!! RX, TX Must be on 3.3 volt communication, or using level shifters to get to 3.3V UART!!!
 
-int timing = 300; //set the moving average
 
 void setup() //Setup intended for SDK which is spanned and zeroed, or has the barcode information previously entered. Must initialize both serial ports:
 {
@@ -40,24 +41,10 @@ void setup() //Setup intended for SDK which is spanned and zeroed, or has the ba
 
   Serial.flush();
   Serial1.flush();
-  
-  delay(1000);
-  Serial1.write('A');
-  delay(1000);
-  Serial1.print(timing);
-  delay(500);
-  Serial1.write('\r');
-  delay(2000);
 
-  while (Serial1.available()) // read from SDK port, send to Serial port to interupt send 'c' without line ending
-  {
-    int inByte = Serial1.read();
-    Serial.write(inByte);
-  }
   Serial.println();
-
-
-  Serial.println("Finished Setup");
+  Serial.println("Finished Setup, send 'c' to start/stop");
+  
   Serial.println("Sensor #, Conc.(PPB), Temp.(C), Rh (%),Conc. (Counts), Temp. (Counts), Rh (%Counts), Days, Hours, Minutes, Seconds");
   Serial1.write('c');
 
