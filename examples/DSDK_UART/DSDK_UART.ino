@@ -30,7 +30,7 @@ DGS runs at 9600 baud rate.
 
 //#include "SoftwareSerial.h" //Include the next lines if using Arduino without Serial1 support, and replace refernces to Serial1 with mySerial
 //
-//SoftwareSerial mySerial(10, 11); // !!! RX, TX Must be on 3.3 volt communication, or using level shifters to get to 3.3V UART!!!
+//SoftwareSerial Serial1(10, 11); // !!! RX, TX Must be on 3.3 volt communication, or using level shifters to get to 3.3V UART!!!
 
 
 void setup() //Setup intended for SDK which is spanned and zeroed, or has the barcode information previously entered. Must initialize both serial ports:
