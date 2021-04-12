@@ -231,7 +231,7 @@ void DGS::getEEPROM(void)
   String data = _mySerial->readStringUntil('\n');
   DEBUG_PRINTLN(data);
   while (!_mySerial->available()) {}
-  for (int i = 1; i < 14; i++) {
+  for (int i = 0; i < 13; i++) {
     data = _mySerial->readStringUntil('\n');
     String subS1 = data.substring(0, data.indexOf('='));
     String subS2 = data.substring(data.indexOf('=') + 2);
@@ -240,14 +240,14 @@ void DGS::getEEPROM(void)
     DEBUG_PRINT("= ");
     DEBUG_PRINTLN(eepromInt[i]);
   }
-  for (int i = 14; i < 19; i++) {
+  for (int i = 0; i < 5; i++) {
     data = _mySerial->readStringUntil('\n');
     String subS1 = data.substring(0, data.indexOf('='));
     String subS2 = data.substring(data.indexOf('=') + 2);
-    eepromStr[i - 14] = subS2;
+    eepromStr[i] = subS2;
     DEBUG_PRINT(subS1);
     DEBUG_PRINT("= ");
-    DEBUG_PRINTLN(eepromStr[i - 14]);
+    DEBUG_PRINTLN(eepromStr[i]);
   }
   data = _mySerial->readStringUntil('\n');
   String subS1 = data.substring(0, data.indexOf('='));
